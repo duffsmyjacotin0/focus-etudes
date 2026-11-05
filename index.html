@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1020">
+<title>Focus Études</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>
+  :root {
+    --bg: #0f1020; --card: #1a1b33; --card2: #23244a; --line: #2f3160;
+    --text: #f2f2ff; --muted: #9a9cc4; --accent: #7c6cff; --accent2: #a497ff;
+    --ok: #3ddc97; --bad: #ff6b81; --hard: #ff8a3d;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+  body { padding: env(safe-area-inset-top) 0 calc(84px + env(safe-area-inset-bottom)); min-height: 100vh; }
+  main { max-width: 520px; margin: 0 auto; padding: 18px 16px; }
+  h1 { font-size: 28px; margin: 6px 0 2px; letter-spacing: -0.5px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  p { line-height: 1.45; }
+  .sub { color: var(--muted); margin: 0 0 18px; font-size: 15px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+  .label { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--card2); color: var(--text); border-radius: 999px;
+    padding: 10px 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .chip.on { background: var(--accent); border-color: var(--accent); }
+  .chip.small { padding: 6px 11px; font-size: 13px; font-weight: 500; cursor: default; }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode { border: 2px solid var(--line); background: var(--card2); border-radius: 14px; padding: 12px; cursor: pointer; text-align: left; color: var(--text); font: inherit; }
+  .mode b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .mode span { font-size: 13px; color: var(--muted); line-height: 1.35; display: block; }
+  .mode.on.moyen { border-color: var(--accent); background: #2b2860; }
+  .mode.on.hard { border-color: var(--hard); background: #4a2a1a; }
+  .btn { display: block; width: 100%; border: 0; border-radius: 14px; padding: 16px; font-size: 17px; font-weight: 700;
+    background: var(--accent); color: white; cursor: pointer; font-family: inherit; text-align: center; text-decoration: none; }
+  .btn:disabled { opacity: .45; }
+  .btn.ghost { background: var(--card2); border: 1px solid var(--line); }
+  .btn.danger { background: var(--bad); }
+  .btn + .btn { margin-top: 10px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  input[type=number], input[type=time], input[type=text] { background: var(--card2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 12px; font-size: 16px; font-family: inherit; width: 100%; }
+  .timer { font-size: 56px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: -1px; margin: 6px 0; }
+  .center { text-align: center; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+  .badge.moyen { background: #2b2860; color: var(--accent2); }
+  .badge.hard { background: #4a2a1a; color: var(--hard); }
+  .muted { color: var(--muted); font-size: 14px; }
+  .hidden { display: none !important; }
+
+  nav { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(15,16,32,.94); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line); display: flex; justify-content: space-around; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); }
+  nav button { background: none; border: 0; color: var(--muted); font-size: 12px; font-weight: 600; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; cursor: pointer; padding: 4px 18px; font-family: inherit; }
+  nav button .ic { font-size: 22px; }
+  nav button.on { color: var(--accent2); }
+
+  .item { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .item:first-child { border-top: 0; padding-top: 0; }
+  .item .x { background: none; border: 0; color: var(--bad); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px; }
+  details { margin-top: 8px; }
+  summary { color: var(--accent2); font-size: 14px; font-weight: 600; cursor: pointer; }
+  ol { padding-left: 20px; margin: 8px 0; }
+  ol li { margin-bottom: 8px; line-height: 1.45; font-size: 15px; }
+  code { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 14px; white-space: nowrap; }
+  #blockUrl { white-space: normal; word-break: break-all; }
+
+  /* Écran de blocage + quiz */
+  .overlay { position: fixed; inset: 0; background: var(--bg); z-index: 50; overflow-y: auto;
+    padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
+  .overlay .inner { max-width: 520px; margin: 0 auto; }
+  .lock { font-size: 64px; text-align: center; margin-top: 20px; }
+  .opt { display: block; width: 100%; text-align: left; background: var(--card2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px; font-size: 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit; }
+  .opt.good { background: #173d30; border-color: var(--ok); }
+  .opt.wrong { background: #4a1d27; border-color: var(--bad); }
+  .progress { display: flex; gap: 8px; justify-content: center; margin: 10px 0 16px; }
+  .progress i { width: 34px; height: 8px; border-radius: 4px; background: var(--line); }
+  .progress i.done { background: var(--ok); }
+  .qcat { font-size: 12px; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; }
+  .qtext { font-size: 19px; font-weight: 700; margin: 6px 0 16px; line-height: 1.35; }
+  .toast { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: var(--card2); border: 1px solid var(--line); padding: 10px 16px; border-radius: 12px; z-index: 99; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <!-- ============ ONGLET SESSION ============ -->
+  <section id="tab-session">
+    <h1>Focus Études</h1>
+    <p class="sub">Bloque tes apps de distraction et concentre-toi.</p>
+
+    <!-- Session en cours -->
+    <div id="active" class="card hidden">
+      <div class="center"><span id="activeBadge" class="badge"></span></div>
+      <div class="timer" id="activeTimer">--:--</div>
+      <p class="center muted" id="activeUntil"></p>
+      <button class="btn ghost" id="stopBtn"></button>
+    </div>
+
+    <!-- Nouvelle session -->
+    <div id="setup">
+      <div class="card">
+        <p class="label">Durée</p>
+        <div class="chips" id="durations"></div>
+        <div class="row hidden" id="customRow" style="margin-top:12px">
+          <input type="number" id="customH" min="0" max="12" placeholder="Heures" inputmode="numeric">
+          <input type="number" id="customM" min="0" max="59" placeholder="Minutes" inputmode="numeric">
+        </div>
+      </div>
+      <div class="card">
+        <p class="label">Mode</p>
+        <div class="modes">
+          <button class="mode moyen on" data-mode="moyen"><b>😐 Moyen</b><span>Pour arrêter avant la fin : réussir 2 questions d'informatique.</span></button>
+          <button class="mode hard" data-mode="hard"><b>🔥 Hard</b><span>Impossible d'arrêter avant la fin. Aucune exception.</span></button>
+        </div>
+      </div>
+      <div class="card">
+        <p class="label">Apps bloquées</p>
+        <div class="chips" id="appsList"></div>
+      </div>
+      <button class="btn" id="startBtn">Lancer la session</button>
+    </div>
+  </section>
+
+  <!-- ============ ONGLET PLANNING ============ -->
+  <section id="tab-planning" class="hidden">
+    <h1>Planning</h1>
+    <p class="sub">Blocages automatiques chaque semaine, comme une alarme.</p>
+
+    <div class="card">
+      <p class="label">Nouveau blocage</p>
+      <div class="chips" id="days"></div>
+      <div class="row" style="margin-top:14px">
+        <div style="flex:1"><p class="label" style="margin-bottom:6px">Heure</p><input type="time" id="planTime" value="21:00"></div>
+        <div style="flex:1"><p class="label" style="margin-bottom:6px">Durée</p>
+          <select id="planDur" style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:16px">
+            <option value="30">30 min</option><option value="60">1 h</option><option value="90">1 h 30</option>
+            <option value="120" selected>2 h</option><option value="180">3 h</option><option value="240">4 h</option>
+          </select></div>
+      </div>
+      <div class="modes" style="margin-top:14px" id="planModes">
+        <button class="mode moyen on" data-mode="moyen"><b>😐 Moyen</b><span>Déblocable avec 2 questions</span></button>
+        <button class="mode hard" data-mode="hard"><b>🔥 Hard</b><span>Impossible à arrêter</span></button>
+      </div>
+      <button class="btn" id="addPlan" style="margin-top:14px">Ajouter au planning</button>
+    </div>
+
+    <div class="card">
+      <p class="label">Mes blocages planifiés</p>
+      <div id="planList"></div>
+    </div>
+  </section>
+
+  <!-- ============ ONGLET CONFIG ============ -->
+  <section id="tab-config" class="hidden">
+    <h1>Configuration</h1>
+    <p class="sub">À faire une seule fois dans l'app <b>Raccourcis</b> de ton iPhone (environ 10 minutes).</p>
+
+    <div class="card">
+      <h2>1. Raccourci « Focus Demarrer »</h2>
+      <p class="muted">Il enregistre l'heure de fin du blocage.</p>
+      <ol>
+        <li>Raccourcis → onglet <b>Raccourcis</b> → <b>+</b>. Nomme-le exactement <code>Focus Demarrer</code> (sans accent).</li>
+        <li>Ajoute l'action <b>Ajuster la date</b> : <b>Ajouter</b> → valeur : la variable <b>Entrée du raccourci</b> → unité <b>minutes</b> → à <b>Date actuelle</b>.</li>
+        <li>Ajoute l'action <b>Texte</b> et mets-y la variable <b>Date ajustée</b>.</li>
+        <li>Ajoute <b>Enregistrer le fichier</b> : enregistre le <b>Texte</b>, désactive <b>Demander où enregistrer</b>, sous-chemin <code>focus-fin.txt</code>, active <b>Remplacer si le fichier existe</b>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>2. Raccourci « Focus Arreter »</h2>
+      <ol>
+        <li>Nouveau raccourci nommé <code>Focus Arreter</code>.</li>
+        <li>Action <b>Texte</b> contenant la variable <b>Date actuelle</b>.</li>
+        <li><b>Enregistrer le fichier</b> avec exactement les mêmes réglages qu'à l'étape 1 (<code>focus-fin.txt</code>, remplacer).</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>3. Raccourci « Focus Verifier »</h2>
+      <ol>
+        <li>Nouveau raccourci nommé <code>Focus Verifier</code>.</li>
+        <li><b>Obtenir le fichier</b> : sous-chemin <code>focus-fin.txt</code>, désactive <b>Afficher le sélecteur</b> et <b>Erreur si introuvable</b>.</li>
+        <li><b>Obtenir les dates de</b> → <b>Fichier</b>.</li>
+        <li><b>Si</b> → <b>Date actuelle</b> <b>est avant</b> <b>Dates</b>.</li>
+        <li>Dans le <b>Si</b> : <b>Ouvrir les URL</b> avec cette adresse :<br><code id="blockUrl"></code>
+          <button class="chip small" id="copyUrl" style="margin-top:6px;cursor:pointer">Copier l'adresse</button></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>4. Automatisation des apps</h2>
+      <ol>
+        <li>Raccourcis → onglet <b>Automatisation</b> → <b>+</b> → <b>App</b>.</li>
+        <li>Choisis : <span id="appsInline"></span>. Coche <b>Est ouverte</b>.</li>
+        <li>Choisis <b>Exécuter immédiatement</b> et désactive <b>Avertir lors de l'exécution</b>.</li>
+        <li>Action : <b>Exécuter le raccourci</b> → <code>Focus Verifier</code>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>5. Mettre l'app sur ton écran d'accueil</h2>
+      <ol>
+        <li>Ouvre cette page dans <b>Safari</b>.</li>
+        <li>Touche <b>Partager</b> → <b>Sur l'écran d'accueil</b>.</li>
+      </ol>
+      <p class="muted">Ouvre toujours l'app avec cette icône : elle garde tes sessions et ton planning.</p>
+    </div>
+
+    <div class="card">
+      <h2>Tester</h2>
+      <p class="muted">Lance un blocage d'1 minute en mode moyen, puis ouvre TikTok : l'écran de blocage doit apparaître.</p>
+      <button class="btn ghost" id="testBtn">Tester 1 minute</button>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="session" class="on"><span class="ic">⏱️</span>Session</button>
+  <button data-tab="planning"><span class="ic">📅</span>Planning</button>
+  <button data-tab="config"><span class="ic">⚙️</span>Config</button>
+</nav>
+
+<!-- ============ ÉCRAN DE BLOCAGE ============ -->
+<div class="overlay hidden" id="blockScreen">
+  <div class="inner">
+    <div class="lock">🔒</div>
+    <h1 class="center">App bloquée</h1>
+    <p class="center sub" id="blockMsg">Retourne étudier, tu peux le faire 💪</p>
+    <div class="card center">
+      <span id="blockBadge" class="badge"></span>
+      <div class="timer" id="blockTimer">--:--</div>
+      <p class="muted" id="blockUntil"></p>
+    </div>
+    <button class="btn" id="blockUnlock">Débloquer (2 questions)</button>
+    <button class="btn ghost" id="blockHome">Ouvrir Focus Études</button>
+  </div>
+</div>
+
+<!-- ============ QUIZ ============ -->
+<div class="overlay hidden" id="quizScreen">
+  <div class="inner">
+    <h1 class="center">Prouve-le 🧠</h1>
+    <p class="center sub">Réponds correctement à 2 questions de suite pour arrêter le blocage.</p>
+    <div class="progress"><i id="p0"></i><i id="p1"></i></div>
+    <div class="card">
+      <div class="qcat" id="qcat"></div>
+      <div class="qtext" id="qtext"></div>
+      <div id="qopts"></div>
+      <p class="center muted hidden" id="qwait"></p>
+    </div>
+    <button class="btn ghost" id="quizCancel">Annuler, je continue d'étudier</button>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// ---------- Réglages ----------
+const APPS = ["TikTok", "Instagram", "Snapchat", "Facebook", "WhatsApp"];
+const DURATIONS = [[30, "30 min"], [60, "1 h"], [120, "2 h"], [180, "3 h"], [240, "4 h"], [0, "Perso"]];
+const DAYS = [[1, "Lun"], [2, "Mar"], [3, "Mer"], [4, "Jeu"], [5, "Ven"], [6, "Sam"], [0, "Dim"]];
+const DAY_NAMES = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+const NEEDED = 2;          // bonnes réponses de suite pour débloquer
+const WRONG_WAIT = 10;     // secondes d'attente après une mauvaise réponse
+
+const $ = id => document.getElementById(id);
+const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const pageUrl = () => location.href.split("#")[0].split("?")[0];
+
+// ---------- Lien vers l'app Raccourcis ----------
+function runShortcut(name, input) {
+  let url = "shortcuts://x-callback-url/run-shortcut?name=" + encodeURIComponent(name);
+  if (input !== undefined) url += "&input=text&text=" + encodeURIComponent(input);
+  url += "&x-success=" + encodeURIComponent(pageUrl());
+  location.href = url;
+}
+
+// ---------- Calcul de la session active (manuelle ou planifiée) ----------
+function activeSession() {
+  const now = Date.now();
+  const found = [];
+  const s = load("focus.session", null);
+  if (s && s.end > now && !s.cancelled) found.push({ end: s.end, mode: s.mode, key: "manuel" });
+
+  const overrides = load("focus.overrides", []);
+  for (const p of load("focus.schedules", [])) {
+    const [h, m] = p.time.split(":").map(Number);
+    for (let back = 0; back <= 7; back++) {
+      const d = new Date(); d.setDate(d.getDate() - back); d.setHours(h, m, 0, 0);
+      if (!p.days.includes(d.getDay())) continue;
+      const start = d.getTime(), end = start + p.minutes * 60000;
+      const key = p.id + "@" + start;
+      if (start <= now && now < end && !overrides.includes(key)) found.push({ end, mode: p.mode, key });
+    }
+  }
+  if (!found.length) return null;
+  return {
+    end: Math.max(...found.map(f => f.end)),
+    mode: found.some(f => f.mode === "hard") ? "hard" : "moyen",
+    keys: found.map(f => f.key),
+  };
+}
+
+function cancelActive() {
+  const a = activeSession();
+  if (!a || a.mode === "hard") return;
+  const overrides = load("focus.overrides", []);
+  for (const k of a.keys) {
+    if (k === "manuel") { const s = load("focus.session", null); if (s) { s.cancelled = true; save("focus.session", s); } }
+    else overrides.push(k);
+  }
+  save("focus.overrides", overrides.slice(-100));
+}
+
+// ---------- Formatage ----------
+function fmtLeft(ms) {
+  const t = Math.max(0, Math.round(ms / 1000));
+  const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
+  const p = n => String(n).padStart(2, "0");
+  return h ? `${h}:${p(m)}:${p(s)}` : `${p(m)}:${p(s)}`;
+}
+const fmtHour = ms => new Date(ms).toLocaleTimeString("fr-CA", { hour: "2-digit", minute: "2-digit" });
+const fmtDur = min => min < 60 ? `${min} min` : `${Math.floor(min / 60)} h${min % 60 ? " " + (min % 60) : ""}`;
+const modeLabel = m => m === "hard" ? "🔥 Mode hard" : "😐 Mode moyen";
+
+function toast(msg) {
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+}
+
+// ---------- Onglets ----------
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  ["session", "planning", "config"].forEach(t => $("tab-" + t).classList.toggle("hidden", t !== name));
+  if (name === "planning") renderPlans();
+  window.scrollTo(0, 0);
+}
+
+// ---------- Onglet session ----------
+let duration = 60, mode = "moyen";
+function renderDurations() {
+  $("durations").innerHTML = "";
+  for (const [min, label] of DURATIONS) {
+    const c = document.createElement("button");
+    c.className = "chip" + (duration === min ? " on" : ""); c.textContent = label;
+    c.onclick = () => { duration = min; renderDurations(); $("customRow").classList.toggle("hidden", min !== 0); };
+    $("durations").appendChild(c);
+  }
+}
+function bindModes(container, onChange) {
+  container.querySelectorAll(".mode").forEach(b => b.onclick = () => {
+    container.querySelectorAll(".mode").forEach(x => x.classList.toggle("on", x === b));
+    onChange(b.dataset.mode);
+  });
+}
+bindModes($("setup"), m => mode = m);
+
+$("startBtn").onclick = () => startSession(duration === 0
+  ? (Number($("customH").value) || 0) * 60 + (Number($("customM").value) || 0)
+  : duration, mode);
+
+function startSession(minutes, m) {
+  if (!minutes || minutes < 1) return toast("Choisis une durée");
+  if (minutes > 12 * 60) return toast("Maximum 12 heures");
+  const end = Date.now() + minutes * 60000;
+  if (m === "hard" && !confirm(`Mode hard : tu ne pourras PAS arrêter avant ${fmtHour(end)}.\n\nOn y va ?`)) return;
+  save("focus.session", { start: Date.now(), end, mode: m });
+  render();
+  runShortcut("Focus Demarrer", String(minutes));
+}
+
+$("stopBtn").onclick = () => {
+  const a = activeSession();
+  if (a && a.mode === "moyen") openQuiz();
+};
+
+// ---------- Onglet planning ----------
+let planDays = [], planMode = "moyen";
+function renderDays() {
+  $("days").innerHTML = "";
+  for (const [d, label] of DAYS) {
+    const c = document.createElement("button");
+    c.className = "chip" + (planDays.includes(d) ? " on" : ""); c.textContent = label;
+    c.onclick = () => { planDays = planDays.includes(d) ? planDays.filter(x => x !== d) : [...planDays, d]; renderDays(); };
+    $("days").appendChild(c);
+  }
+}
+bindModes($("planModes"), m => planMode = m);
+
+$("addPlan").onclick = () => {
+  if (!planDays.length) return toast("Choisis au moins un jour");
+  const list = load("focus.schedules", []);
+  list.push({ id: Date.now().toString(36), days: [...planDays], time: $("planTime").value || "21:00",
+              minutes: Number($("planDur").value), mode: planMode });
+  save("focus.schedules", list);
+  planDays = []; renderDays(); renderPlans();
+  toast("Ajouté ! Configure-le dans Raccourcis 👇");
+};
+
+function renderPlans() {
+  const list = load("focus.schedules", []);
+  const box = $("planList");
+  if (!list.length) { box.innerHTML = '<p class="muted" style="margin:0">Aucun blocage planifié pour l\'instant.</p>'; return; }
+  box.innerHTML = "";
+  const a = activeSession();
+  for (const p of list) {
+    const order = DAYS.map(d => d[0]).filter(d => p.days.includes(d));
+    const daysTxt = order.map(d => DAY_NAMES[d]).join(", ");
+    const activeHard = a && a.mode === "hard" && a.keys.some(k => k.startsWith(p.id + "@"));
+    const el = document.createElement("div"); el.className = "item";
+    el.innerHTML = `
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:16px">${p.time} · ${fmtDur(p.minutes)}</div>
+        <div class="muted" style="margin:2px 0 6px">${daysTxt}</div>
+        <span class="badge ${p.mode}">${modeLabel(p.mode)}</span>
+        <details><summary>Activer dans Raccourcis</summary><ol>
+          <li>Raccourcis → <b>Automatisation</b> → <b>+</b> → <b>Heure de la journée</b>.</li>
+          <li>Heure : <b>${p.time}</b> → <b>Hebdomadaire</b> → coche : <b>${daysTxt}</b>.</li>
+          <li><b>Exécuter immédiatement</b>.</li>
+          <li>Action <b>Texte</b> : <code>${p.minutes}</code></li>
+          <li>Action <b>Exécuter le raccourci</b> → <code>Focus Demarrer</code> (l'entrée = le Texte).</li>
+        </ol></details>
+      </div>`;
+    const x = document.createElement("button"); x.className = "x";
+    x.textContent = activeHard ? "🔒" : "Supprimer";
+    x.onclick = () => {
+      if (activeHard) return toast("Blocage hard en cours : impossible de le supprimer maintenant");
+      if (!confirm("Supprimer ce blocage ? Pense aussi à supprimer l'automatisation dans Raccourcis.")) return;
+      save("focus.schedules", load("focus.schedules", []).filter(q => q.id !== p.id)); renderPlans();
+    };
+    el.appendChild(x); box.appendChild(el);
+  }
+}
+
+// ---------- Onglet config ----------
+function renderConfig() {
+  $("blockUrl").textContent = pageUrl() + "#bloque";
+  $("appsInline").innerHTML = APPS.map(a => `<b>${a}</b>`).join(", ");
+}
+$("copyUrl").onclick = async () => {
+  try { await navigator.clipboard.writeText(pageUrl() + "#bloque"); toast("Adresse copiée ✅"); }
+  catch { toast("Copie impossible : sélectionne l'adresse à la main"); }
+};
+$("testBtn").onclick = () => startSession(1, "moyen");
+
+// ---------- Écran de blocage ----------
+const MOTIVATION = [
+  "Retourne étudier, tu peux le faire 💪", "Tes notes te diront merci 📚", "Encore un effort, la pause viendra 🎯",
+  "TikTok sera encore là plus tard 😉", "Un chapitre de plus, juste un 🔥",
+];
+function showBlock() {
+  $("blockMsg").textContent = MOTIVATION[Math.floor(Math.random() * MOTIVATION.length)];
+  $("blockScreen").classList.remove("hidden");
+  render();
+}
+function hideBlock() {
+  $("blockScreen").classList.add("hidden");
+  history.replaceState(null, "", pageUrl());
+}
+$("blockHome").onclick = hideBlock;
+$("blockUnlock").onclick = () => openQuiz();
+
+// ---------- Quiz ----------
+let streak = 0, recent = [], waitTimer = null;
+function openQuiz() {
+  streak = 0; $("quizScreen").classList.remove("hidden"); nextQuestion();
+}
+function closeQuiz() {
+  clearInterval(waitTimer); $("quizScreen").classList.add("hidden");
+}
+$("quizCancel").onclick = closeQuiz;
+
+function nextQuestion() {
+  $("p0").classList.toggle("done", streak > 0); $("p1").classList.toggle("done", streak > 1);
+  $("qwait").classList.add("hidden");
+  let i;
+  do { i = Math.floor(Math.random() * QUESTIONS.length); } while (recent.includes(i));
+  recent = [...recent, i].slice(-15);
+  const q = QUESTIONS[i];
+  $("qcat").textContent = q.cat; $("qtext").textContent = q.q; $("qopts").innerHTML = "";
+  // mélange des choix
+  const order = q.c.map((_, k) => k).sort(() => Math.random() - .5);
+  for (const k of order) {
+    const b = document.createElement("button"); b.className = "opt"; b.textContent = q.c[k];
+    b.onclick = () => answer(k === q.r, b, q);
+    $("qopts").appendChild(b);
+  }
+}
+
+function answer(ok, btn, q) {
+  const buttons = [...$("qopts").children];
+  buttons.forEach(b => b.disabled = true);
+  if (ok) {
+    btn.classList.add("good"); streak++;
+    $("p0").classList.toggle("done", streak > 0); $("p1").classList.toggle("done", streak > 1);
+    if (streak >= NEEDED) return setTimeout(unlocked, 700);
+    setTimeout(nextQuestion, 700);
+  } else {
+    btn.classList.add("wrong");
+    buttons.find(b => b.textContent === q.c[q.r]).classList.add("good");
+    streak = 0;
+    $("p0").classList.remove("done"); $("p1").classList.remove("done");
+    let left = WRONG_WAIT;
+    $("qwait").classList.remove("hidden");
+    $("qwait").textContent = `Mauvaise réponse. Tu recommences à 0 dans ${left} s…`;
+    clearInterval(waitTimer);
+    waitTimer = setInterval(() => {
+      left--;
+      $("qwait").textContent = `Mauvaise réponse. Tu recommences à 0 dans ${left} s…`;
+      if (left <= 0) { clearInterval(waitTimer); nextQuestion(); }
+    }, 1000);
+  }
+}
+
+function unlocked() {
+  closeQuiz();
+  const a = activeSession();
+  if (a && a.mode === "hard") return toast("Un blocage hard est en cours, impossible d'arrêter");
+  cancelActive();
+  hideBlock(); render();
+  toast("Blocage arrêté ✅");
+  runShortcut("Focus Arreter");
+}
+
+// ---------- Affichage général (chaque seconde) ----------
+function render() {
+  const a = activeSession();
+  // Onglet session
+  $("active").classList.toggle("hidden", !a);
+  $("setup").classList.toggle("hidden", !!a);
+  if (a) {
+    $("activeBadge").className = "badge " + a.mode; $("activeBadge").textContent = modeLabel(a.mode);
+    $("activeTimer").textContent = fmtLeft(a.end - Date.now());
+    $("activeUntil").textContent = "Bloqué jusqu'à " + fmtHour(a.end);
+    const hard = a.mode === "hard";
+    $("stopBtn").disabled = hard;
+    $("stopBtn").textContent = hard ? `🔒 Impossible d'arrêter avant ${fmtHour(a.end)}` : "Arrêter (2 questions)";
+  }
+  // Écran de blocage
+  if (!$("blockScreen").classList.contains("hidden")) {
+    if (a) {
+      $("blockBadge").className = "badge " + a.mode; $("blockBadge").textContent = modeLabel(a.mode);
+      $("blockTimer").textContent = fmtLeft(a.end - Date.now());
+      $("blockUntil").textContent = "Débloqué à " + fmtHour(a.end);
+      $("blockUnlock").classList.toggle("hidden", a.mode === "hard");
+    } else {
+      // Raccourcis dit "bloqué" mais l'app ne connaît pas la session : on traite comme le mode moyen
+      $("blockBadge").className = "badge moyen"; $("blockBadge").textContent = "Blocage actif";
+      $("blockTimer").textContent = "🔒";
+      $("blockUntil").textContent = "Réponds aux questions pour arrêter le blocage.";
+      $("blockUnlock").classList.remove("hidden");
+    }
+  }
+}
+
+// ---------- Démarrage ----------
+$("appsList").innerHTML = APPS.map(a => `<span class="chip small">${a}</span>`).join("");
+renderDurations(); renderDays(); renderPlans(); renderConfig();
+if (location.hash === "#bloque") showBlock();
+window.addEventListener("hashchange", () => { if (location.hash === "#bloque") showBlock(); });
+render();
+setInterval(() => { render(); }, 1000);
+</script>
+</body>
+</html>
